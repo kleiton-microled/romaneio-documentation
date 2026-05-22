@@ -1,0 +1,45 @@
+#Requires -Version 5.1
+param([switch]$SkipBuild, [switch]$UseGlobal)
+$ErrorActionPreference = 'Stop'
+# O .cmd faz cd para a raiz do repo antes de invocar (script roda de %TEMP%).
+$RepoRoot = (Get-Location).Path
+if (-not (Test-Path (Join-Path $RepoRoot 'mkdocs.yml'))) {
+    throw "Execute o setup na raiz do repositorio de documentacao (mkdocs.yml nao encontrado em $RepoRoot)."
+}
+$VenvPath = Join-Path $RepoRoot '.venv'
+$Requirements = Join-Path $RepoRoot 'requirements.txt'
+function Write-Step($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
+function Write-Ok($m) { Write-Host "OK: $m" -ForegroundColor Green }
+function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') }
+function Get-PyCandidates {
+  $l = [System.Collections.Generic.List[object]]::new()
+  if (Get-Command py -EA SilentlyContinue) { $l.Add(@{ Exe='py'; Prefix=@('-3') }) }
+  foreach ($n in 'python','python3') { if (Get-Command $n -EA SilentlyContinue) { $l.Add(@{ Exe=$n; Prefix=@() }) } }
+  if ($env:LOCALAPPDATA) { Get-ChildItem "$env:LOCALAPPDATA\Programs\Python\Python*\python.exe" -EA SilentlyContinue | % { $l.Add(@{ Exe=$_.FullName; Prefix=@() }) } }
+  $l
+}
+function Test-Py($c) {
+  try { $a=@(); if($c.Prefix){$a+=$c.Prefix}; $a+='-c','import sys; print(sys.executable)'; $o=& $c.Exe @a 2>&1; $line=($o|Select -Last 1).ToString().Trim(); if($line){@{Exe=$c.Exe;Prefix=$c.Prefix;Resolved=$line}} } catch {}
+}
+function Find-Py { foreach($c in Get-PyCandidates){$w=Test-Py $c; if($w){return $w}} $null }
+function Install-Py {
+  if(-not(Get-Command winget -EA SilentlyContinue)){ throw 'Instale Python 3.12+ (Add to PATH) ou instale winget.' }
+  Write-Step 'winget install Python.Python.3.12'
+  winget install --id Python.Python.3.12 -e --source winget --accept-package-agreements --accept-source-agreements
+  if($LASTEXITCODE -ne 0){ throw "winget falhou $LASTEXITCODE" }
+  Refresh-Path; Start-Sleep 3
+}
+function Run-Py($py,$args){ $a=@(); if($py.Prefix){$a+=$py.Prefix}; $a+=$args; & $py.Exe @a; if($LASTEXITCODE -ne 0){ throw "Python falhou" } }
+Write-Step "Repo: $RepoRoot"; Set-Location $RepoRoot
+$py = Find-Py
+if(-not $py){ Write-Host 'AVISO: Python ausente' -ForegroundColor Yellow; Install-Py; $py=Find-Py; if(-not $py){ throw 'Reabra o terminal e rode o script de novo.' } }
+Write-Ok $py.Resolved
+if($UseGlobal){ Write-Step 'pip --user'; Run-Py $py @('-m','pip','install','--user','-U','pip'); Run-Py $py @('-m','pip','install','--user','-r',$Requirements); $mk='mkdocs' }
+else {
+  if(-not(Test-Path $VenvPath)){ Write-Step 'venv'; Run-Py $py @('-m','venv',$VenvPath) }
+  $vp = Join-Path $VenvPath 'Scripts\python.exe'
+  Write-Step 'pip venv'; & $vp -m pip install -U pip; & $vp -m pip install -r $Requirements
+  $mk = Join-Path (Split-Path $vp) 'mkdocs.exe'
+}
+if(-not $SkipBuild){ Write-Step 'mkdocs build'; if(Test-Path $mk){& $mk build}else{Run-Py $py @('-m','mkdocs','build')}; Write-Ok 'site/' }
+Write-Host "`nPronto: .\.venv\Scripts\mkdocs.exe serve" -ForegroundColor Green

@@ -1,0 +1,42 @@
+# pip install mkdocs mkdocs-material
+# mkdocs serve  →  ./serve.cmd ou ./serve.sh
+# mkdocs build
+
+site_name: Romaneio – Guias do Usuário
+site_description: Passo a passo para operar e testar as telas do sistema Romaneio
+site_url: https://SEU-USUARIO.github.io/romaneio-documentation/
+
+repo_name: romaneio-documentation
+repo_url: https://github.com/SEU-USUARIO/romaneio-documentation
+
+docs_dir: docs
+strict: true
+
+theme:
+  name: material
+  language: pt
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Início: index.md
+  - Guias por tela:
+      - Índice: guias-usuario/README.md
+      - Movimentação Carga Solta: guias-usuario/MovimentacaoCargaSolta.md
+      - Associação de Marcantes: guias-usuario/AssociacaoMarcantes.md
+  - Publicar no GitHub: GITHUB_PAGES_SETUP.md

@@ -1,0 +1,33 @@
+# Build APENAS para publicação pública (Guias do Usuário).
+# Uso: mkdocs build -f mkdocs.public.yml
+# Deploy: repositório GitHub PUBLICO separado (ver docs/GITHUB_PAGES_SETUP.md).
+
+site_name: Romaneio – Guias do Usuário
+site_description: Guias operacionais das telas do sistema Romaneio
+site_url: https://SEU-USUARIO.github.io/romaneio-guias/
+
+repo_name: romaneio-guias
+repo_url: https://github.com/SEU-USUARIO/romaneio-guias
+
+docs_dir: docs-public
+strict: true
+
+theme:
+  name: material
+  language: pt
+  features:
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Início: index.md
+  - Guias do Usuário:
+      - Índice: guias-usuario/README.md
+      - Movimentação Carga Solta: guias-usuario/MovimentacaoCargaSolta.md
