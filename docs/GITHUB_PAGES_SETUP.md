@@ -47,6 +47,41 @@ Git Bash: `./serve.sh`
 - [ ] **Settings → Pages → Source = GitHub Actions** (confirmar no navegador)
 - [ ] Workflow verde em **Actions**
 
+## GitHub CLI (`gh`)
+
+Instalado via:
+
+```powershell
+winget install GitHub.cli --source winget
+```
+
+**Primeira vez** (no Git Bash ou PowerShell — feche e reabra o terminal após instalar):
+
+```bash
+gh auth login
+```
+
+Sugestões do assistente: **GitHub.com** → **HTTPS** → login pelo **navegador** (ou token).
+
+Depois, integre ao Git:
+
+```bash
+gh auth setup-git
+```
+
+Teste:
+
+```bash
+gh auth status
+gh repo view kleiton-microled/romaneio-documentation
+```
+
+Push com `gh` na pasta do repo:
+
+```bash
+git push origin main
+```
+
 ## Problemas comuns
 
 | Problema | Solução |
