@@ -25,6 +25,10 @@ Não inclui documentação técnica (API, banco, infraestrutura). Cada tela tem 
 
 [guias-usuario/README.md](guias-usuario/README.md)
 
+## Site publicado
+
+https://kleiton-microled.github.io/romaneio-documentation/
+
 ## Preview local
 
 Na raiz do repositório: `.\serve.cmd` ou `./serve.sh` → http://127.0.0.1:8000

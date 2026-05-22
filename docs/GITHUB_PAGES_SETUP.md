@@ -1,38 +1,57 @@
-# Publicar os guias no GitHub Pages
+# Publicar no GitHub Pages (plano gratuito)
 
-Este repositório é voltado a **guias do usuário** e pode ficar **público** no GitHub sem expor documentação técnica interna.
+Repositório: **https://github.com/kleiton-microled/romaneio-documentation**
 
-## MkDocs + GitHub Pages
+Site publicado: **https://kleiton-microled.github.io/romaneio-documentation/**
 
-```bash
-pip install mkdocs mkdocs-material
-mkdocs build
-```
+## Configuração no GitHub (uma vez)
 
-Publicar a pasta `site/` com Actions (`peaceiris/actions-mkdocs-material`) ou `mkdocs gh-deploy`.
+1. Abra o repositório no GitHub.
+2. **Settings** → **Pages**.
+3. Em **Build and deployment** → **Source**, escolha **GitHub Actions**.
+4. Faça push na branch `main` (ou rode o workflow manualmente em **Actions** → **Deploy GitHub Pages** → **Run workflow**).
 
-Ajuste em `mkdocs.yml`:
+Na primeira execução bem-sucedida, a URL do site aparece em **Settings → Pages** e no job **deploy** (environment `github-pages`).
 
-```yaml
-site_url: https://SEU-USUARIO.github.io/romaneio-documentation/
-```
+## O que o workflow faz
+
+Arquivo: `.github/workflows/deploy-pages.yml`
+
+- Instala Python 3.12, MkDocs e Material
+- Executa `mkdocs build` (usa `mkdocs.yml` e pasta `docs/`)
+- Publica a pasta `site/` no GitHub Pages
+
+Dispara em todo **push** na branch `main`.
 
 ## Desenvolvimento local
 
-Na raiz do repositório:
-
 ```powershell
 .\setup-mkdocs-env.cmd   # primeira vez
-.\serve.cmd              # preview
+.\serve.cmd              # http://127.0.0.1:8000
 ```
 
 Git Bash: `./serve.sh`
 
-Abrir http://127.0.0.1:8000
+## Atualizar o site
+
+1. Edite os arquivos em `docs/guias-usuario/`.
+2. Commit e push para `main`.
+3. Aguarde o workflow **Deploy GitHub Pages** (Actions) ficar verde.
+4. O site atualiza em alguns minutos (pode levar até ~10 min na primeira vez).
 
 ## Checklist
 
-- [ ] Repositório criado no GitHub (pode ser **público**)
-- [ ] `site_url` atualizado
-- [ ] Workflow de deploy configurado
-- [ ] `mkdocs build` sem erros
+- [x] Repositório `kleiton-microled/romaneio-documentation`
+- [x] `site_url` em `mkdocs.yml`
+- [x] Workflow `deploy-pages.yml`
+- [ ] **Settings → Pages → Source = GitHub Actions** (confirmar no navegador)
+- [ ] Workflow verde em **Actions**
+
+## Problemas comuns
+
+| Problema | Solução |
+|----------|---------|
+| 404 no site | Pages ainda não configurado como **GitHub Actions**; aguardar deploy verde |
+| Build falha no CI | Rodar `mkdocs build` localmente e corrigir links/`nav` |
+| Push com SSL | `git config --global http.sslBackend schannel` (Windows) |
+| Repository not found | Criar repo ou corrigir `git remote` / permissões na org |

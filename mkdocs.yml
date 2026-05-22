@@ -4,10 +4,10 @@
 
 site_name: Romaneio – Guias do Usuário
 site_description: Passo a passo para operar e testar as telas do sistema Romaneio
-site_url: https://SEU-USUARIO.github.io/romaneio-documentation/
+site_url: https://kleiton-microled.github.io/romaneio-documentation/
 
 repo_name: romaneio-documentation
-repo_url: https://github.com/SEU-USUARIO/romaneio-documentation
+repo_url: https://github.com/kleiton-microled/romaneio-documentation
 
 docs_dir: docs
 strict: true
